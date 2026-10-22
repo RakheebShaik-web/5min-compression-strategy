@@ -1,0 +1,28 @@
+{
+  "name": "Three Inside Bar + Lower Volume Breakout",
+  "version": "1.0.0",
+  "timeframe": "5Min",
+  "pattern": {
+    "mother_candle": "bar[i]",
+    "inside_bars": ["bar[i+1]", "bar[i+2]", "bar[i+3]"],
+    "inside_definition": "inside.high <= mother.high and inside.low >= mother.low",
+    "volume_definition": "inside_1.volume > inside_2.volume > inside_3.volume"
+  },
+  "entry": {
+    "eligible_after": "inside_3 close",
+    "long": "immediately following bar has high > max(inside highs)",
+    "short": "immediately following bar has low < min(inside lows)",
+    "invalidation": "no breakout on the immediately following bar means the mother has more than exactly 3 inside bars",
+    "touch_is_breakout": false
+  },
+  "risk": {
+    "long_stop": "min(inside lows)",
+    "short_stop": "max(inside highs)",
+    "targets_r": [2, 3, 4, 5]
+  },
+  "prohibited_logic": [
+    "EMA", "VWAP", "RSI", "MACD", "ATR", "trend filters",
+    "market regime filters", "time filters", "breakout volume filters",
+    "higher timeframe confirmation", "additional price-action confirmation"
+  ]
+}

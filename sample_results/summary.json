@@ -1,0 +1,72 @@
+{
+  "strategy_name": "Three Inside Bar + Lower Volume Breakout",
+  "generated_at_utc": "2026-10-22T14:46:09.929742+00:00",
+  "symbol": "TEST",
+  "timeframe": "5Min",
+  "config": {
+    "symbol": "TEST",
+    "instrument_type": "index",
+    "timezone": "UTC",
+    "quantity": 1.0,
+    "contract_multiplier": 1.0,
+    "expiry": null,
+    "strike": null,
+    "option_type": null,
+    "initial_cash": 100000.0,
+    "intrabar_conflict_policy": "stop_first",
+    "fill_model": "stop_order_bar_proxy"
+  },
+  "metrics": {
+    "total_setups": 2,
+    "total_trades": 2,
+    "long_trades": 1,
+    "short_trades": 1,
+    "winning_trades": 2,
+    "losing_trades": 0,
+    "breakeven_trades": 0,
+    "win_rate": 1.0,
+    "target_1_2_hit_rate": 1.0,
+    "target_1_3_hit_rate": 1.0,
+    "target_1_4_hit_rate": 1.0,
+    "target_1_5_hit_rate": 1.0,
+    "average_r_achieved": 5.0,
+    "median_r_achieved": 5.0,
+    "gross_profit": 150.0,
+    "gross_loss": 0.0,
+    "profit_factor": null,
+    "net_pnl": 150.0,
+    "initial_cash": 100000.0,
+    "final_equity": 100150.0,
+    "total_return": 0.0015,
+    "maximum_drawdown": 0.0,
+    "maximum_drawdown_pct": 0.0
+  },
+  "data_fingerprint": {
+    "sha256": "4f83e04e8124cf72d6664ba75f76337233113685479716544f0f1777c90e1134",
+    "total_bars": 12,
+    "first_timestamp": "2026-01-02T09:15:00+00:00",
+    "last_timestamp": "2026-01-02T10:10:00+00:00",
+    "close_sum": 1807.0,
+    "volume_sum": 10300.0,
+    "timezone": "UTC",
+    "timeframe": "5Min"
+  },
+  "warnings": [
+    "OHLCV bars do not reveal intrabar price order; stop-first handling is conservative.",
+    "No spread, slippage, fees, market impact, or liquidity constraints are modeled.",
+    "Setups are evaluated independently; overlapping trades do not reserve shared capital.",
+    "No benchmark is produced because the requested outputs define a per-strategy event study.",
+    "A cash index may not be directly tradable; reported P&L is a point-value research ledger."
+  ],
+  "runtime": {
+    "python": "3.11.1",
+    "platform": "Windows-10-10.0.26100-SP0"
+  },
+  "artifacts": {
+    "setups": "setups.csv",
+    "trades": "trades.csv",
+    "equity": "equity.csv",
+    "metrics": "metrics.json",
+    "report": "report.md"
+  }
+}

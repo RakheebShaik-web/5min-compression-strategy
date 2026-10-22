@@ -1,0 +1,7 @@
+[
+  "OHLCV bars do not reveal intrabar price order; stop-first handling is conservative.",
+  "No spread, slippage, fees, market impact, or liquidity constraints are modeled.",
+  "Setups are evaluated independently; overlapping trades do not reserve shared capital.",
+  "No benchmark is produced because the requested outputs define a per-strategy event study.",
+  "A cash index may not be directly tradable; reported P&L is a point-value research ledger."
+]

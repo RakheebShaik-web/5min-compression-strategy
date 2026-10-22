@@ -1,0 +1,10 @@
+{
+  "sha256": "4f83e04e8124cf72d6664ba75f76337233113685479716544f0f1777c90e1134",
+  "total_bars": 12,
+  "first_timestamp": "2026-01-02T09:15:00+00:00",
+  "last_timestamp": "2026-01-02T10:10:00+00:00",
+  "close_sum": 1807.0,
+  "volume_sum": 10300.0,
+  "timezone": "UTC",
+  "timeframe": "5Min"
+}

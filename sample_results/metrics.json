@@ -5,12 +5,21 @@
   "short_trades": 1,
   "winning_trades": 2,
   "losing_trades": 0,
+  "breakeven_trades": 0,
   "win_rate": 1.0,
   "target_1_2_hit_rate": 1.0,
   "target_1_3_hit_rate": 1.0,
   "target_1_4_hit_rate": 1.0,
   "target_1_5_hit_rate": 1.0,
   "average_r_achieved": 5.0,
+  "median_r_achieved": 5.0,
+  "gross_profit": 150.0,
+  "gross_loss": 0.0,
+  "profit_factor": null,
   "net_pnl": 150.0,
-  "maximum_drawdown": 0.0
+  "initial_cash": 100000.0,
+  "final_equity": 100150.0,
+  "total_return": 0.0015,
+  "maximum_drawdown": 0.0,
+  "maximum_drawdown_pct": 0.0
 }

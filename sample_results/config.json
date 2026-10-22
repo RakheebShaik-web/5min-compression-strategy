@@ -1,0 +1,13 @@
+{
+  "symbol": "TEST",
+  "instrument_type": "index",
+  "timezone": "UTC",
+  "quantity": 1.0,
+  "contract_multiplier": 1.0,
+  "expiry": null,
+  "strike": null,
+  "option_type": null,
+  "initial_cash": 100000.0,
+  "intrabar_conflict_policy": "stop_first",
+  "fill_model": "stop_order_bar_proxy"
+}
