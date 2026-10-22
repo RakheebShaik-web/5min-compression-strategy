@@ -1,6 +1,6 @@
 {
   "strategy_name": "Three Inside Bar + Lower Volume Breakout",
-  "generated_at_utc": "2026-10-22T14:46:09.929742+00:00",
+  "generated_at_utc": "2026-10-22T14:50:02.052508+00:00",
   "symbol": "TEST",
   "timeframe": "5Min",
   "config": {
@@ -49,7 +49,9 @@
     "close_sum": 1807.0,
     "volume_sum": 10300.0,
     "timezone": "UTC",
-    "timeframe": "5Min"
+    "timeframe": "5Min",
+    "provider": "csv",
+    "source": "sample_5min.csv"
   },
   "warnings": [
     "OHLCV bars do not reveal intrabar price order; stop-first handling is conservative.",
@@ -66,6 +68,7 @@
     "setups": "setups.csv",
     "trades": "trades.csv",
     "equity": "equity.csv",
+    "input_bars": "input_bars.csv",
     "metrics": "metrics.json",
     "report": "report.md"
   }

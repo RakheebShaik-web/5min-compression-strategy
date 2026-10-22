@@ -20,6 +20,7 @@
 - Timeframe: 5-minute completed candles
 - Timezone: UTC
 - Data SHA-256: `4f83e04e8124cf72d6664ba75f76337233113685479716544f0f1777c90e1134`
+- Data provider: csv
 - Bars: 12
 - Fill model: stop_order_bar_proxy
 - Intrabar conflict policy: stop_first

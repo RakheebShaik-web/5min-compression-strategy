@@ -23,6 +23,8 @@ class DataFingerprint:
     volume_sum: float
     timezone: str
     timeframe: str = "5Min"
+    provider: str = "csv"
+    source: str = ""
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -32,8 +34,12 @@ def load_ohlcv(path: str | Path, timezone: str = "UTC") -> pd.DataFrame:
     source = Path(path)
     if not source.is_file():
         raise FileNotFoundError(f"OHLCV file not found: {source}")
+    return normalize_ohlcv(pd.read_csv(source), timezone)
+
+
+def normalize_ohlcv(bars: pd.DataFrame, timezone: str = "UTC") -> pd.DataFrame:
     ZoneInfo(timezone)
-    bars = pd.read_csv(source)
+    bars = bars.copy()
     bars.columns = [column.strip().lower() for column in bars.columns]
     missing = REQUIRED_COLUMNS.difference(bars.columns)
     if missing:
@@ -76,8 +82,15 @@ def load_ohlcv(path: str | Path, timezone: str = "UTC") -> pd.DataFrame:
     return bars
 
 
-def fingerprint(path: str | Path, bars: pd.DataFrame, timezone: str) -> DataFingerprint:
-    digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def fingerprint(
+    path: str | Path | None,
+    bars: pd.DataFrame,
+    timezone: str,
+    provider: str = "csv",
+    source: str = "",
+) -> DataFingerprint:
+    payload = Path(path).read_bytes() if path is not None else bars.to_csv(index=False).encode("utf-8")
+    digest = hashlib.sha256(payload).hexdigest()
     return DataFingerprint(
         sha256=digest,
         total_bars=len(bars),
@@ -86,6 +99,8 @@ def fingerprint(path: str | Path, bars: pd.DataFrame, timezone: str) -> DataFing
         close_sum=float(bars["close"].sum()),
         volume_sum=float(bars["volume"].sum()),
         timezone=timezone,
+        provider=provider,
+        source=source or (str(path) if path is not None else ""),
     )
 
 

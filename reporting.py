@@ -73,6 +73,7 @@ def write_artifacts(
     _write_csv(output / "setups.csv", results)
     _write_csv(output / "trades.csv", trades)
     _write_csv(output / "equity.csv", equity)
+    _write_csv(output / "input_bars.csv", bars)
     _write_json(output / "metrics.json", metrics)
     _write_json(output / "config.json", config.to_dict())
     _write_json(output / "data_fingerprint.json", data_fingerprint.to_dict())
@@ -90,7 +91,7 @@ def write_artifacts(
         "runtime": {"python": sys.version.split()[0], "platform": platform.platform()},
         "artifacts": {
             "setups": "setups.csv", "trades": "trades.csv", "equity": "equity.csv",
-            "metrics": "metrics.json", "report": "report.md",
+            "input_bars": "input_bars.csv", "metrics": "metrics.json", "report": "report.md",
         },
     }
     _write_json(output / "summary.json", summary)
@@ -123,6 +124,7 @@ def _render_report(summary: dict[str, Any]) -> str:
 - Timeframe: 5-minute completed candles
 - Timezone: {summary['config']['timezone']}
 - Data SHA-256: `{summary['data_fingerprint']['sha256']}`
+- Data provider: {summary['data_fingerprint']['provider']}
 - Bars: {summary['data_fingerprint']['total_bars']}
 - Fill model: {summary['config']['fill_model']}
 - Intrabar conflict policy: {summary['config']['intrabar_conflict_policy']}

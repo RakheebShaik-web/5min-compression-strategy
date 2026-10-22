@@ -67,6 +67,21 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
+## Yahoo Finance data
+
+Yahoo Finance can supply recent 5-minute index candles directly:
+
+```powershell
+python main.py `
+  --yahoo-symbol "^NSEI" `
+  --instrument-type index `
+  --timezone Asia/Kolkata `
+  --period 1mo `
+  --output results\nifty_yahoo
+```
+
+The `--symbol` output label defaults to the Yahoo ticker. Alternatively, use `--start YYYY-MM-DD --end YYYY-MM-DD`. The yfinance documentation states that intraday history is limited to the most recent 60 days. Yahoo index candles may contain missing or zero volume; if every candle has unusable volume, the run fails because declining volume is mandatory. Yahoo is therefore convenient for recent experiments but is not an institutional options-history source.
+
 ## Run an index backtest
 
 ```powershell
@@ -105,6 +120,7 @@ Use the actual exchange multiplier applicable to that contract and date. The exa
 Each run writes:
 
 - `setups.csv`: every detected setup, including nontraded and ambiguous setups.
+- `input_bars.csv`: the exact normalized candles used by the run.
 - `trades.csv`: executed trades and complete mother/inside-bar context.
 - `equity.csv`: bar-by-bar realized and unrealized P&L, gross exposure, equity, and drawdown.
 - `metrics.json`: requested metrics plus gross profit/loss, profit factor, returns, and drawdown percentage.

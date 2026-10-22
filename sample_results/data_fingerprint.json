@@ -6,5 +6,7 @@
   "close_sum": 1807.0,
   "volume_sum": 10300.0,
   "timezone": "UTC",
-  "timeframe": "5Min"
+  "timeframe": "5Min",
+  "provider": "csv",
+  "source": "sample_5min.csv"
 }

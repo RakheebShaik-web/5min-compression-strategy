@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
@@ -10,6 +12,7 @@ from config import BacktestConfig
 from data_loader import fingerprint, load_ohlcv, validate_option_dates
 from metrics import build_equity_curve, calculate_metrics
 from strategy import detect_setups
+from yahoo_data import download_yahoo_5m
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,6 +118,23 @@ def test_fingerprint_is_stable() -> None:
     second = fingerprint(source, bars, "UTC")
     assert first == second
     assert len(first.sha256) == 64
+
+
+def test_yahoo_adapter_normalizes_download(monkeypatch: pytest.MonkeyPatch) -> None:
+    raw = pd.DataFrame(
+        {
+            "Datetime": pd.date_range("2026-01-02 09:15", periods=4, freq="5min", tz="Asia/Kolkata"),
+            "Open": [100, 101, 102, 103], "High": [102, 103, 104, 105],
+            "Low": [99, 100, 101, 102], "Close": [101, 102, 103, 104],
+            "Volume": [1000, 900, 800, 700],
+        }
+    ).set_index("Datetime")
+    fake = SimpleNamespace(download=lambda **_: raw)
+    monkeypatch.setitem(sys.modules, "yfinance", fake)
+    bars = download_yahoo_5m("^NSEI", "Asia/Kolkata", period="5d")
+    assert list(bars.columns) == ["datetime", "open", "high", "low", "close", "volume"]
+    assert len(bars) == 4
+    assert str(bars["datetime"].dt.tz) == "Asia/Kolkata"
 
 
 def test_config_rejects_invalid_quantity() -> None:
