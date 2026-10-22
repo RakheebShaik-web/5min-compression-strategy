@@ -1,0 +1,16 @@
+{
+  "total_setups": 2,
+  "total_trades": 2,
+  "long_trades": 1,
+  "short_trades": 1,
+  "winning_trades": 2,
+  "losing_trades": 0,
+  "win_rate": 1.0,
+  "target_1_2_hit_rate": 1.0,
+  "target_1_3_hit_rate": 1.0,
+  "target_1_4_hit_rate": 1.0,
+  "target_1_5_hit_rate": 1.0,
+  "average_r_achieved": 5.0,
+  "net_pnl": 150.0,
+  "maximum_drawdown": 0.0
+}
