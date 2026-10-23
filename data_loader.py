@@ -37,7 +37,11 @@ def load_ohlcv(path: str | Path, timezone: str = "UTC") -> pd.DataFrame:
     return normalize_ohlcv(pd.read_csv(source), timezone)
 
 
-def normalize_ohlcv(bars: pd.DataFrame, timezone: str = "UTC") -> pd.DataFrame:
+def normalize_ohlcv(
+    bars: pd.DataFrame, timezone: str = "UTC", expected_minutes: int = 5
+) -> pd.DataFrame:
+    if expected_minutes <= 0:
+        raise ValueError("expected_minutes must be positive")
     ZoneInfo(timezone)
     bars = bars.copy()
     bars.columns = [column.strip().lower() for column in bars.columns]
@@ -63,12 +67,13 @@ def normalize_ohlcv(bars: pd.DataFrame, timezone: str = "UTC") -> pd.DataFrame:
     if not bars["datetime"].is_monotonic_increasing:
         raise ValueError("Candle timestamps must already be in chronological order")
     bars = bars.reset_index(drop=True)
-    if ((bars["datetime"].dt.minute % 5) != 0).any() or (bars["datetime"].dt.second != 0).any():
-        raise ValueError("Every timestamp must align to a 5-minute boundary")
+    if ((bars["datetime"].dt.minute % expected_minutes) != 0).any() or (bars["datetime"].dt.second != 0).any():
+        raise ValueError(f"Every timestamp must align to a {expected_minutes}-minute boundary")
     if len(bars) > 1:
         deltas = bars["datetime"].diff().dropna().dt.total_seconds()
-        if ((deltas < 300) | ((deltas % 300) != 0)).any():
-            raise ValueError("Data must contain only chronological 5-minute candles")
+        expected_seconds = expected_minutes * 60
+        if ((deltas < expected_seconds) | ((deltas % expected_seconds) != 0)).any():
+            raise ValueError(f"Data must contain only chronological {expected_minutes}-minute candles")
     if (bars["volume"] < 0).any():
         raise ValueError("Volume cannot be negative")
     if not bars[["open", "high", "low", "close", "volume"]].notna().all().all():

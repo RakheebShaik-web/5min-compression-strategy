@@ -13,6 +13,9 @@ from data_loader import fingerprint, load_ohlcv, validate_option_dates
 from metrics import build_equity_curve, calculate_metrics
 from strategy import detect_setups
 from yahoo_data import download_yahoo_5m
+from dual_backtest import OptionExecutionLeg, run_signal_to_options_backtest
+from market_data import resample_one_minute_to_five, select_option_contract
+from providers import dhan_rolling_to_frame, upstox_candles_to_frame
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -162,3 +165,66 @@ def test_option_data_after_expiry_is_rejected() -> None:
     bars = load_ohlcv(ROOT / "sample_5min.csv")
     with pytest.raises(ValueError, match="after the configured expiry"):
         validate_option_dates(bars, "2026-01-01")
+
+
+def test_one_minute_resample_uses_exact_ohlcv_rules() -> None:
+    minute = pd.DataFrame({
+        "datetime": pd.date_range("2026-01-02 09:15", periods=5, freq="1min", tz="Asia/Kolkata"),
+        "open": [10, 11, 12, 13, 14], "high": [12, 13, 14, 15, 16],
+        "low": [9, 10, 11, 12, 13], "close": [11, 12, 13, 14, 15],
+        "volume": [1, 2, 3, 4, 5],
+    })
+    bars, report = resample_one_minute_to_five(minute)
+    assert bars.iloc[0][["open", "high", "low", "close", "volume"]].tolist() == [10, 16, 9, 15, 15]
+    assert report.output_bars == 1
+
+
+def test_option_selection_requires_explicit_rule() -> None:
+    contracts = [
+        {"expiry": "2026-01-29", "instrument_type": "CE", "strike_price": 100},
+        {"expiry": "2026-01-29", "instrument_type": "CE", "strike_price": 110},
+    ]
+    selected = select_option_contract(contracts, expiry="2026-01-29", option_type="call", spot=104, moneyness_steps=1)
+    assert selected["strike_price"] == 110
+
+
+def test_signal_to_option_uses_next_option_bar_open() -> None:
+    bars = load_ohlcv(ROOT / "sample_5min.csv")
+    leg = OptionExecutionLeg("TESTCE", "2026-01-29", 100, "call", "long", 1, 25, 0.05)
+    put = OptionExecutionLeg("TESTPE", "2026-01-29", 100, "put", "long", 1, 25, 0.05)
+    results = run_signal_to_options_backtest(bars.iloc[:6], "TESTFUT", bars, bars, leg, put)
+    trade = results.iloc[0]
+    assert trade["option_entry_datetime"] > trade["breakout_datetime"]
+    assert trade["option_entry_price"] == 108.0
+    assert trade["option_exit_price"] == 200.0
+    assert trade["option_pnl"] == 2300.0
+
+
+def test_option_execution_applies_unfavorable_friction_tick_rounding_and_fees() -> None:
+    bars = load_ohlcv(ROOT / "sample_5min.csv")
+    leg = OptionExecutionLeg("TESTCE", "2026-01-29", 100, "call", "long", 1, 25, 0.05, 10, 20)
+    put = OptionExecutionLeg("TESTPE", "2026-01-29", 100, "put", "long", 1, 25, 0.05)
+    trade = run_signal_to_options_backtest(bars.iloc[:6], "TESTFUT", bars, bars, leg, put).iloc[0]
+    assert trade["option_entry_price"] == 108.15
+    assert trade["option_exit_price"] == 199.8
+    assert trade["option_fees"] == 40
+    assert trade["option_pnl"] == pytest.approx(2251.25)
+
+
+def test_upstox_candle_parser_validates_and_sorts() -> None:
+    payload = {"status": "success", "data": {"candles": [
+        ["2026-01-02T09:20:00+05:30", 11, 12, 10, 11.5, 90, 1],
+        ["2026-01-02T09:15:00+05:30", 10, 11, 9, 10.5, 100, 1],
+    ]}}
+    bars = upstox_candles_to_frame(payload, "Asia/Kolkata")
+    assert list(bars["open"]) == [10, 11]
+
+
+def test_dhan_candle_parser_validates_parallel_arrays() -> None:
+    timestamps = [int(pd.Timestamp("2026-01-02 09:15", tz="Asia/Kolkata").timestamp())]
+    payload = {"data": {"ce": {
+        "timestamp": timestamps, "open": [10], "high": [11], "low": [9],
+        "close": [10.5], "volume": [100],
+    }, "pe": None}}
+    bars = dhan_rolling_to_frame(payload, "call", "Asia/Kolkata")
+    assert bars.iloc[0]["volume"] == 100

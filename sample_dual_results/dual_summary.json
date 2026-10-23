@@ -1,0 +1,36 @@
+{
+  "mode": "signal_to_option",
+  "signal_symbol": "TESTFUT",
+  "fill_policy": "next available option 5-minute open after signal entry/exit bar",
+  "long_leg": {
+    "symbol": "TESTCE",
+    "expiry": "2026-01-29",
+    "strike": 100.0,
+    "option_type": "call",
+    "position_side": "long",
+    "quantity": 1,
+    "contract_multiplier": 25.0,
+    "tick_size": 0.05,
+    "friction_bps": 0.0,
+    "fee_per_contract_per_side": 0.0
+  },
+  "short_leg": {
+    "symbol": "TESTPE",
+    "expiry": "2026-01-29",
+    "strike": 100.0,
+    "option_type": "put",
+    "position_side": "long",
+    "quantity": 1,
+    "contract_multiplier": 25.0,
+    "tick_size": 0.05,
+    "friction_bps": 0.0,
+    "fee_per_contract_per_side": 0.0
+  },
+  "metrics": {
+    "total_setups": 2,
+    "total_trades": 1,
+    "win_rate": 1.0,
+    "net_pnl": 2300.0,
+    "maximum_drawdown": 0.0
+  }
+}

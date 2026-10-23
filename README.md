@@ -115,6 +115,77 @@ python main.py `
 
 Use the actual exchange multiplier applicable to that contract and date. The example multiplier is illustrative, not a current contract specification.
 
+## Download option candles
+
+Credentials are read from environment variables and are never written to project output.
+
+Upstox Plus, exact expired contract:
+
+```powershell
+$env:UPSTOX_ACCESS_TOKEN = "your-session-token"
+python data_cli.py upstox `
+  --underlying-key "NSE_INDEX|Nifty 50" `
+  --expiry 2026-09-24 `
+  --option-type call `
+  --strike 25000 `
+  --start 2026-09-01 `
+  --end 2026-09-24 `
+  --output data\nifty_25000_ce
+```
+
+For an explicit ATM offset, replace `--strike` with `--moneyness-offset 0 --spot 25025`. Positive offsets select higher listed strikes; negative offsets select lower strikes.
+
+DhanHQ rolling option series:
+
+```powershell
+$env:DHAN_ACCESS_TOKEN = "your-session-token"
+$env:DHAN_CLIENT_ID = "your-client-id"
+python data_cli.py dhan `
+  --security-id 13 `
+  --expiry-flag WEEK `
+  --expiry-code 1 `
+  --strike ATM `
+  --option-type call `
+  --start 2026-09-01 `
+  --end 2026-09-24 `
+  --output data\nifty_atm_ce
+```
+
+Each download stores the untouched provider response, normalized `bars_5min.csv`, and selection metadata. Dhan rolling series can change strike through time and remain a separately identified research mode.
+
+## Futures signal with option execution
+
+This mode detects the exact pattern and structure levels on futures/index candles. A long signal uses the explicitly mapped long option file; a short signal uses the explicitly mapped short option file. Option entry and exit fill at the next available option 5-minute open after the signal bar, avoiding same-bar lookahead.
+
+```powershell
+python dual_main.py `
+  --signal-data data\nifty_futures_5min.csv `
+  --signal-symbol NIFTY-FUT `
+  --long-option-data data\nifty_ce\bars_5min.csv `
+  --long-symbol NIFTY-CE `
+  --long-expiry 2026-09-24 `
+  --long-strike 25000 `
+  --long-side long `
+  --long-quantity 1 `
+  --long-multiplier 75 `
+  --long-tick-size 0.05 `
+  --long-friction-bps 5 `
+  --long-fee-per-side 20 `
+  --short-option-data data\nifty_pe\bars_5min.csv `
+  --short-symbol NIFTY-PE `
+  --short-expiry 2026-09-24 `
+  --short-strike 25000 `
+  --short-side long `
+  --short-quantity 1 `
+  --short-multiplier 75 `
+  --short-tick-size 0.05 `
+  --short-friction-bps 5 `
+  --short-fee-per-side 20 `
+  --output results\nifty_dual
+```
+
+The signal instrument controls setup, breakout direction, structure stop, targets, and exit time. Mapped option candles control executable premium fills and option P&L. No strike or expiry is selected silently.
+
 ## Audit artifacts
 
 Each run writes:
